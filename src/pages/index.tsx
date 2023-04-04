@@ -9,7 +9,6 @@ const cairo = Cairo({ weight: '600', subsets: ['arabic'] })
 
 const Home: NextPage = () => {
 
-
   return (
     <>
       <Head>
