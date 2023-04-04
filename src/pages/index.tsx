@@ -14,7 +14,7 @@ const Home: NextPage = () => {
       <Head>
         <title>منظومة المخالفات</title>
         <meta name="description" content="منظومة المخالفات لوزارة الداخلية الليبية" />
-        <link rel="icon" href="/moi-logo" />
+        <link rel="icon" href="moi-logo.png" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#ffffff] to-[#c8c8c8]">
         <h1 className={`${cairo.className} text-3xl `}>
