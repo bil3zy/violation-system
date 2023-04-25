@@ -4,10 +4,11 @@ import {
   type NextAuthOptions,
   type DefaultSession,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
+import { JWT } from "next-auth/jwt";
+import bcrypt from 'bcryptjs'
+import CredentialsProvider from "next-auth/providers/credentials";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -37,20 +38,62 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session({ session, user }) {
+    session({ session, token }) {
+      console.log('token', token)
       if (session.user) {
-        session.user.id = user.id;
+        session.user.id = token.id as string;
+        session.user.name = token?.username as string;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
     },
+    jwt({ token, user }: any): Promise<JWT> {
+      if (user) {
+        token.username = user?.username
+      }
+      return token
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
+    CredentialsProvider({
+      // The name to display on the sign in form (e.g. 'Sign in with...')
+      name: 'Credentials',
+      // The credentials is used to generate a suitable form on the sign in page.
+      // You can specify whatever fields you are expecting to be submitted.
+      // e.g. domain, username, password, 2FA token, etc.
+      // You can pass any HTML attribute to the <input> tag through the object.
+      credentials: {
+        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials): Promise<any> {
+        // You need to provide your own logic here that takes the credentials
+        // submitted and returns either a object representing a user or value
+        // that is false/null if the credentials are invalid.
+        // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
+        // You can also use the `req` object to obtain additional parameters
+        // (i.e., the request IP address)
+        const user = await prisma.account.findFirst({
+          where: {
+            username: String(credentials?.username),
+          }
+        })
+
+        const checkPwd = bcrypt.compareSync(String(credentials?.password), String(user?.password))
+        if (user) {
+
+          if (checkPwd) {
+            return user;
+          }
+        } else return null
+        // If no error and we have user data, return it
+
+        // Return null if user data could not be retrieved
+
+      }
+    })
+
     /**
      * ...add more providers here.
      *
@@ -60,7 +103,13 @@ export const authOptions: NextAuthOptions = {
      *
      * @see https://next-auth.js.org/providers/github
      */
-  ],
+  ], pages: {
+    signIn: '/signin'
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
+  }
 };
 
 /**
@@ -74,3 +123,4 @@ export const getServerAuthSession = (ctx: {
 }) => {
   return getServerSession(ctx.req, ctx.res, authOptions);
 };
+
