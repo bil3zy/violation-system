@@ -4,9 +4,15 @@ import { api } from '~/utils/api'
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import type { ViolationEntry, ViolationCar, ViolationPerson, ViolationTicket } from '@prisma/client'
+import type { AppRouter } from '~/server/api/root';
+import type { inferRouterOutputs } from '@trpc/server';
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
 
 type Inputs = ViolationCar & ViolationEntry & ViolationPerson & ViolationTicket;
-let options = { day: ['numeric'], month: ['long'], weekday: ['long'], year: 'numeric' };
+type ViolationsOutput = RouterOutput['example']['getViolations'];
+
+const options = { day: ['numeric'], month: ['long'], weekday: ['long'], year: 'numeric' };
 
 const cairo = Cairo({ weight: '500', subsets: ['arabic'] })
 
@@ -20,12 +26,13 @@ export default function ViolationEntriesRecord() {
     const searchViolationsMutation = api.example.getViolations.useMutation()
 
     const violationEntriesArray = getAllViolationEntiresQuery.data?.pages[page]?.violationEntries;
-    console.log('getViolaitons', getAllViolationEntiresQuery.data)
-    const onSubmit: SubmitHandler<Inputs> = (data) => {
 
+    const searchViolationsData = searchViolationsMutation.data;
+
+    const onSubmit: SubmitHandler<Inputs> = (data, e): void => {
+        e?.preventDefault();
         const createdAtValue = new Date(data.createdAt);
         const searchViolations = searchViolationsMutation.mutate({
-
             recieptNumber: data.recieptNumber!,
             violaitonNumber: data.violationNumber!,
             unit: data.unit!,
@@ -58,26 +65,22 @@ export default function ViolationEntriesRecord() {
             amountToBeFined: data.amountToBeFined!,
             createdAt: createdAtValue,
         })
-        // console.log('createdAtValue', createdAtValue)
     }
-    console.log('searchViolations', searchViolationsMutation.data)
 
-    const handleNextPage = () => {
+    const handleNextPage = async () => {
         if (getAllViolationEntiresQuery.hasNextPage) {
 
-            getAllViolationEntiresQuery.fetchNextPage()
+            await getAllViolationEntiresQuery.fetchNextPage()
             setPage(page + 1)
         }
-        else if (getAllViolationEntiresQuery.data?.pages.length! - 1 > page) {
+        else if (getAllViolationEntiresQuery.data!.pages.length - 1 > page) {
             setPage(page + 1)
         }
-        // console.log(getAllViolationEntiresQuery.data?.pages.length)
-        // console.log(page)
     }
 
-    const handlePrevPage = () => {
+    const handlePrevPage = async () => {
         if (page > 0) {
-            getAllViolationEntiresQuery.fetchPreviousPage()
+            await getAllViolationEntiresQuery.fetchPreviousPage()
             setPage(page - 1)
         }
     }
@@ -102,58 +105,46 @@ export default function ViolationEntriesRecord() {
                     <button type="submit" className={`bg-[#000e82] border-2 border-white  my-8 h-14 rounded-xl text-white shadow-md text-2xl active:bg-[#000e90] transition-colors w-1/2  ${cairo.className}`}>البحث</button>
                 </form>
             </div>
-            {/*  */}
             <table className={`table-auto w-3/5 ${cairo.className} shadow-md text-lg `} >
-
-                {/* <div className="flex bg-slate-500 gap-8  w-full"> */}
                 <thead>
                     <tr className='bg-[#054C6E] h-20 text-white border border-zinc-400 '>
-
                         <th className='text-xl '>التاريخ</th>
                         <th className=''>الوحدة</th>
                         <th className=''>مكان المخالفة</th>
                         <th className=''>رقم المخالفة</th>
-
                     </tr>
                 </thead>
 
                 <tbody className='border border-zinc-400'>
-
-                    {/* <h3>رقم المركبة</h3> */}
-                    {/* </div> */}
-                    {/* <div className="flex bg-slate-500 gap-8  w-full"> */}
-                    {searchViolationsMutation.data ?
-                        searchViolationsMutation.data?.map((el, i): any => {
+                    {searchViolationsData ?
+                        searchViolationsData.map((el: ViolationEntry, i: number) => {
                             return (
                                 <tr key={i} className='even:bg-slate-50 odd:bg-slate-200 first-of-type::rounded-bl-xl first-of-type::border-2'>
-                                    <td className='text-center h-16'>{new Intl.DateTimeFormat('ar-u-ca-latin-nu-latn', { day: 'numeric', month: 'long', weekday: 'long', year: 'numeric' }).format(el?.createdAt)}</td>
-                                    <td className='text-center'>{el?.unit}</td>
-                                    <td className='text-center'>{el?.placeOViolation}</td>
-                                    <td className='text-center'>{el?.violationNumber}</td>
+                                    <td className='text-center h-16'>{new Intl.DateTimeFormat('ar-u-ca-latin-nu-latn', { day: 'numeric', month: 'long', weekday: 'long', year: 'numeric' }).format(el.createdAt)}
+                                    </td>
+                                    <td className='text-center'>{el.unit}</td>
+                                    <td className='text-center'>{el.placeOViolation}</td>
+                                    <td className='text-center'>{el.violationNumber}</td>
                                 </tr>
                             )
                         }) :
-                        violationEntriesArray?.map((el, i) => {
+                        violationEntriesArray?.map((el: ViolationEntry, i: number) => {
                             return (
                                 <tr key={i} className='even:bg-slate-50 odd:bg-slate-200 first-of-type::rounded-bl-xl first-of-type::border-2'>
-                                    <td className='text-center h-16'>{new Intl.DateTimeFormat('ar-u-ca-latin-nu-latn', { day: 'numeric', month: 'long', weekday: 'long', year: 'numeric' }).format(el?.createdAt)}</td>
-                                    <td className='text-center'>{el?.unit}</td>
-                                    <td className='text-center'>{el?.placeOViolation}</td>
-                                    <td className='text-center'>{el?.violationNumber}</td>
+                                    <td className='text-center h-16'>{new Intl.DateTimeFormat('ar-u-ca-latin-nu-latn', { day: 'numeric', month: 'long', weekday: 'long', year: 'numeric' }).format(el.createdAt)}</td>
+                                    <td className='text-center'>{el.unit}</td>
+                                    <td className='text-center'>{el.placeOViolation}</td>
+                                    <td className='text-center'>{el.violationNumber}</td>
                                 </tr>
                             )
                         })
                     }
-
-                    {/* </div> */}
                 </tbody>
             </table>
             <div className="flex w-40 justify-evenly">
-
-                <button className={`${cairo.className} text-white text-xl`} onClick={() => handlePrevPage()}>{`<<`}</button>
-
+                <button className={`${cairo.className} text-white text-xl`} onClick={() => void handlePrevPage()}>{`<<`}</button>
                 <p className='text-white text-2xl'>{page + 1}</p>
-                <button className={`${cairo.className} text-white text-xl`} onClick={() => handleNextPage()}>{`>>`}</button>
+                <button className={`${cairo.className} text-white text-xl`} onClick={() => void handleNextPage()}>{`>>`}</button>
 
             </div>
         </>

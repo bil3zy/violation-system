@@ -9,7 +9,6 @@ import {
 
 import type { ViolationEntry, ViolationCar, ViolationPerson, ViolationTicket } from '@prisma/client'
 
-type Inputs = ViolationCar & ViolationEntry & ViolationPerson & ViolationTicket;
 
 export const exampleRouter = createTRPCRouter({
   hello: publicProcedure
@@ -85,12 +84,12 @@ export const exampleRouter = createTRPCRouter({
         createdAt: { gte: new Date(input.createdAt as Date) },
         officerName: { contains: input.officerName }
       },
-    }).then((res) => {
-      return res
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
 
-    console.log('violations', violations)
-    return violations;
+    return violations
 
   }),
   getAllViolationEntries: protectedProcedure.input(z.object({
@@ -210,7 +209,6 @@ export const exampleRouter = createTRPCRouter({
         violationEntryId: violationId,
       }
     })
-    console.log('createViolationCar', createViolationCar)
   }),
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.example.findMany();

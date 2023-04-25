@@ -27,8 +27,7 @@ export default function Register() {
                 password: data.password,
                 username: data.username,
             })
-            console.log(createUser)
-            router.push('/')
+            await router.push('/')
         }
 
         if (data.password !== data.checkPassword) {

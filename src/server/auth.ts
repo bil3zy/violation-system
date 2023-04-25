@@ -22,7 +22,8 @@ declare module "next-auth" {
       id: string;
       // ...other properties
       // role: UserRole;
-    } & DefaultSession["user"];
+      name: string;
+    } & DefaultSession["user"]
   }
 
   // interface User {
@@ -39,17 +40,16 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, token }) {
-      console.log('token', token)
-      if (session.user) {
+      if (session.user && token) {
         session.user.id = token.id as string;
-        session.user.name = token?.username as string;
+        session.user.name = token.username as string;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
     },
-    jwt({ token, user }: any): Promise<JWT> {
+    jwt({ token, user }): JWT {
       if (user) {
-        token.username = user?.username
+        token.username = user.name
       }
       return token
     },

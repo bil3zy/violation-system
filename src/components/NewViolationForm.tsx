@@ -1,4 +1,5 @@
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import type { SubmitHandler } from 'react-hook-form';
 import { useSession } from "next-auth/react"
 import { Cairo } from "next/font/google";
 import { useRouter } from "next/router";
@@ -12,7 +13,7 @@ const cairoLight = Cairo({ weight: '500', subsets: ['arabic'] })
 
 export default function NewViolationForm() {
 
-    const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<Inputs>();
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<Inputs>();
     const createViolationMutation = api.example.createViolation.useMutation()
     const session = useSession()
     const router = useRouter()
@@ -52,13 +53,11 @@ export default function NewViolationForm() {
             amountToBeFined: data.amountToBeFined as string,
         })
         if (createViolationMutation.isSuccess) {
-            alert('تم الإددخال بنجاح')
-            reset()
+            alert('تم الإددخال بنجاح');
+            reset();
         }
-
     }
 
-    console.log(watch('date'))
     return (
         <>
             <div className="flex">
@@ -66,11 +65,10 @@ export default function NewViolationForm() {
                 <div className={`flex ${cairo.className} p-20 rounded-xl shadow-2xl bg-white`} dir='rtl'>
                     <div className='m-auto flex items-center '>
 
-                        <form method="post" className="grid grid-cols-2 items-center text-lg gap-8  m-auto" onSubmit={handleSubmit(onSubmit)}>
+                        <form method="post" className="grid grid-cols-2 items-center text-lg gap-8  m-auto" onSubmit={() => void handleSubmit(onSubmit)}>
                             {/* register your input into the hook by invoking the "register" function */}
                             <input className='w-60 h-14 p-2 shadow-md rounded-xl bg-zinc-200 border border-zinc-400 ' placeholder="رقم الإيصال"  {...register("recieptNumber")} />
                             <input className='w-60 h-14 p-2 shadow-md rounded-xl bg-zinc-200 border border-zinc-400 ' placeholder="رقم المخالفة"  {...register("violationNumber")} />
-
                             <input className='w-60 h-14 p-2 shadow-md rounded-xl bg-zinc-200 border border-zinc-400 ' placeholder="الرتبة"  {...register("rank")} />
                             <input className='w-60 h-14 p-2 shadow-md rounded-xl bg-zinc-200 border border-zinc-400 ' placeholder="الوحدة"  {...register("unit")} />
                             <input className='w-60 h-14 p-2 shadow-md rounded-xl bg-zinc-200 border border-zinc-400 ' placeholder="اسم الشرطي"  {...register("officerName")} />
