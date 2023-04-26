@@ -3,13 +3,13 @@ import React, { useState } from 'react'
 import { api } from '~/utils/api'
 import { SubmitHandler, useForm } from "react-hook-form";
 
-import type { ViolationEntry, ViolationCar, ViolationPerson, ViolationTicket } from '@prisma/client'
+import type { ViolationsEntry, ViolationsCar, ViolationsPerson, ViolationsTicket } from '@prisma/client'
 import type { AppRouter } from '~/server/api/root';
 import type { inferRouterOutputs } from '@trpc/server';
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
-type Inputs = ViolationCar & ViolationEntry & ViolationPerson & ViolationTicket;
+type Inputs = ViolationsCar & ViolationsEntry & ViolationsPerson & ViolationsTicket;
 type ViolationsOutput = RouterOutput['example']['getViolations'];
 
 const options = { day: ['numeric'], month: ['long'], weekday: ['long'], year: 'numeric' };
@@ -117,7 +117,7 @@ export default function ViolationEntriesRecord() {
 
                 <tbody className='border border-zinc-400'>
                     {searchViolationsData ?
-                        searchViolationsData.map((el: ViolationEntry, i: number) => {
+                        searchViolationsData.map((el: ViolationsEntry, i: number) => {
                             return (
                                 <tr key={i} className='even:bg-slate-50 odd:bg-slate-200 first-of-type::rounded-bl-xl first-of-type::border-2'>
                                     <td className='text-center h-16'>{new Intl.DateTimeFormat('ar-u-ca-latin-nu-latn', { day: 'numeric', month: 'long', weekday: 'long', year: 'numeric' }).format(el.createdAt)}
@@ -128,7 +128,7 @@ export default function ViolationEntriesRecord() {
                                 </tr>
                             )
                         }) :
-                        violationEntriesArray?.map((el: ViolationEntry, i: number) => {
+                        violationEntriesArray?.map((el: ViolationsEntry, i: number) => {
                             return (
                                 <tr key={i} className='even:bg-slate-50 odd:bg-slate-200 first-of-type::rounded-bl-xl first-of-type::border-2'>
                                     <td className='text-center h-16'>{new Intl.DateTimeFormat('ar-u-ca-latin-nu-latn', { day: 'numeric', month: 'long', weekday: 'long', year: 'numeric' }).format(el.createdAt)}</td>
