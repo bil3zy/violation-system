@@ -20,7 +20,12 @@ export default function SignIn() {
     const router = useRouter()
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
-        const onSignin = await signIn('credentials', { redirect: false, username: data.username, password: data.password })
+        try {
+            const onSignin = await signIn('credentials', { redirect: false, username: data.username, password: data.password })
+
+        } catch (error) {
+            console.log(error)
+        }
         if (session.status === 'authenticated') {
             router.back()
         }
