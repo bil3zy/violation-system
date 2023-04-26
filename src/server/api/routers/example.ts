@@ -38,9 +38,12 @@ export const exampleRouter = createTRPCRouter({
           providerAccountId: 'N/A',
           userId: res.id,
         }
-      });
+      }).then((res) => {
+        return res;
+      })
       return newAccount;
     })
+    return newUser;
   }),
   getViolations: protectedProcedure.input(z.object({
     recieptNumber: z.string().optional(),
