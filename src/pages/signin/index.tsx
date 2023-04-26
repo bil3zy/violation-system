@@ -4,8 +4,6 @@ import Head from "next/head";
 import { Cairo } from "next/font/google";
 import { useRouter } from "next/router";
 
-
-
 type Inputs = {
     username: string,
     password: string,
@@ -20,7 +18,7 @@ export default function SignIn() {
 
     const session = useSession()
     const router = useRouter()
-    console.log(session)
+
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         const onSignin = await signIn('credentials', { redirect: false, username: data.username, password: data.password })
         if (session.status === 'authenticated') {

@@ -7,8 +7,7 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 
-import type { ViolationEntry, ViolationCar, ViolationPerson, ViolationTicket } from '@prisma/client'
-
+// import type { ViolationEntry, ViolationCar, ViolationPerson, ViolationTicket } from '@prisma/client'
 
 export const exampleRouter = createTRPCRouter({
   hello: publicProcedure
@@ -21,16 +20,16 @@ export const exampleRouter = createTRPCRouter({
   createUser: publicProcedure.input(z.object({
     username: z.string(),
     password: z.string(),
-  })).mutation(({ ctx, input }) => {
+  })).mutation(async ({ ctx, input }) => {
     const password = bcrypt.hashSync(input.password, 8)
 
-    const newUser = ctx.prisma.user.create({
+    const newUser = await ctx.prisma.user.create({
       data: {
         name: input.username,
       }
-    }).then((res) => {
+    }).then(async (res) => {
 
-      const newAccount = ctx.prisma.account.create({
+      const newAccount = await ctx.prisma.account.create({
         data: {
           username: input.username,
           password,
@@ -40,7 +39,6 @@ export const exampleRouter = createTRPCRouter({
           userId: res.id,
         }
       });
-      console.log(newUser)
       return newAccount;
     })
   }),

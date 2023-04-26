@@ -20,14 +20,15 @@ export default function Register() {
     const createUserMutation = api.example.createUser.useMutation()
 
     const router = useRouter()
-    const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    const onSubmit: SubmitHandler<Inputs> = (data) => {
 
         if (data.password === data.checkPassword) {
             const createUser = createUserMutation.mutate({
                 password: data.password,
                 username: data.username,
             })
-            await router.push('/')
+            console.log(createUserMutation)
+
         }
 
         if (data.password !== data.checkPassword) {
