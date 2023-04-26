@@ -169,8 +169,8 @@ model ViolationsCar {
   yearOfManufacture String?
   chassisNumber     String?
   engineNumber      String?
-  violationEntry    ViolationsEntry @relation(fields: [violationEntryId], references: [id], onDelete: Cascade)
-  violationEntryId  String         @unique
+  violationsEntry    ViolationsEntry @relation(fields: [violationsEntryId], references: [id], onDelete: Cascade)
+  violationsEntryId  String         @unique
 }
 
 model ViolationsPerson {
@@ -183,8 +183,8 @@ model ViolationsPerson {
   typeOfLicense       String?
   placeOfissue        String?
   nameOnDriverLicense String?
-  violationEntry      ViolationsEntry @relation(fields: [violationEntryId], references: [id], onDelete: Cascade)
-  violationEntryId    String         @unique
+  violationsEntry      ViolationsEntry @relation(fields: [violationsEntryId], references: [id], onDelete: Cascade)
+  violationsEntryId    String         @unique
 }
 
 model ViolationsTicket {
@@ -193,7 +193,7 @@ model ViolationsTicket {
   numberOfArticle      String?
   descriptionOfArticle String?
   amountToBeFined      String?
-  violationEntry       ViolationsEntry @relation(fields: [violationEntryId], references: [id], onDelete: Cascade)
-  violationEntryId     String         @unique
+  violationsEntry       ViolationsEntry @relation(fields: [violationsEntryId], references: [id], onDelete: Cascade)
+  violationsEntryId     String         @unique
 }
 

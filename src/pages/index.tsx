@@ -41,7 +41,7 @@ const Home: NextPage = () => {
             منظومة المخالفات
           </h1>
 
-          {/* <button onClick={() => getAllViolationEntiresQuery.hasNextPage && getAllViolationEntiresQuery.fetchNextPage()}>click me</button> */}
+          {/* <button onClick={() => getAllViolationEntiresQuery.hasNextPage && getAllEntiresQuery.fetchNextPage()}>click me</button> */}
           <p className={`${cairo.className} text-white text-1xl mb-4`}>{`مرحبا`}</p>
           <div className="flex w-5/6 justify-evenly gap-20">
 

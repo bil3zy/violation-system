@@ -23,13 +23,13 @@ export const exampleRouter = createTRPCRouter({
   })).mutation(async ({ ctx, input }) => {
     const password = bcrypt.hashSync(input.password, 8)
 
-    const newUser = await ctx.prisma.user.create({
+    const newUser = await ctx.prisma.violationsUser.create({
       data: {
         name: input.username,
       }
     }).then(async (res) => {
 
-      const newAccount = await ctx.prisma.account.create({
+      const newAccount = await ctx.prisma.violationsAccount.create({
         data: {
           username: input.username,
           password,
@@ -78,7 +78,7 @@ export const exampleRouter = createTRPCRouter({
     amountToBeFined: z.string().optional(),
     createdAt: z.date().optional(),
   })).mutation(async ({ ctx, input }) => {
-    const violations = await ctx.prisma.violationEntry.findMany({
+    const violations = await ctx.prisma.violationsEntry.findMany({
       where: {
         recieptNumber: { contains: input.recieptNumber },
         comment: { contains: input.comment },
@@ -100,7 +100,7 @@ export const exampleRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const limit = input.limit ?? 50;
       const { cursor } = input;
-      const violationEntries = await ctx.prisma.violationEntry.findMany({
+      const violationEntries = await ctx.prisma.violationsEntry.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
@@ -152,7 +152,7 @@ export const exampleRouter = createTRPCRouter({
   ).mutation(async ({ ctx, input }) => {
 
     let violationId = ''
-    const createdViolationEntry = await ctx.prisma.violationEntry.create({
+    const createdViolationEntry = await ctx.prisma.violationsEntry.create({
       data: {
         comment: input.comment,
         date: input.date,
@@ -170,7 +170,7 @@ export const exampleRouter = createTRPCRouter({
 
 
 
-    const createViolationCar = await ctx.prisma.violationCar.create({
+    const createViolationCar = await ctx.prisma.violationsCar.create({
       data: {
         chassisNumber: input.chassisNumber,
         color: input.color,
@@ -182,11 +182,11 @@ export const exampleRouter = createTRPCRouter({
         model: input.model,
         plateNumber: input.plateNumber,
         yearOfManufacture: input.yearOfManufacture,
-        violationEntryId: violationId,
+        violationsEntryId: violationId,
       }
 
     })
-    const createViolationPerson = await ctx.prisma.violationPerson.create({
+    const createViolationPerson = await ctx.prisma.violationsPerson.create({
       data: {
         licenseNumber: input.licenseNumber,
         nameOfDriver: input.nameOfDriver,
@@ -197,17 +197,17 @@ export const exampleRouter = createTRPCRouter({
         typeOfLicense: input.typeOfLicense,
 
         typeOfOwner: input.typeOfOwner,
-        violationEntryId: violationId,
+        violationsEntryId: violationId,
       }
     })
-    const createViolationTicket = await ctx.prisma.violationTicket.create({
+    const createViolationTicket = await ctx.prisma.violationsTicket.create({
       data: {
         amountToBeFined: input.amountToBeFined,
 
         descriptionOfArticle: input.descriptionOfArticle,
         numberOfArticle: input.numberOfArticle,
         typeOfArticle: input.typeOfArticle,
-        violationEntryId: violationId,
+        violationsEntryId: violationId,
       }
     })
   }),
