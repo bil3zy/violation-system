@@ -27,7 +27,7 @@ export default function Register() {
                 password: data.password,
                 username: data.username,
             })
-            console.log(createUserMutation)
+            console.log()
 
         }
 

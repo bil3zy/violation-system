@@ -27,9 +27,9 @@ export const exampleRouter = createTRPCRouter({
       data: {
         name: input.username,
       }
-    }).then(async (res) => {
+    }).then((res) => {
 
-      const newAccount = await ctx.prisma.violationsAccount.create({
+      const newAccount = ctx.prisma.violationsAccount.create({
         data: {
           username: input.username,
           password,
@@ -40,6 +40,8 @@ export const exampleRouter = createTRPCRouter({
         }
       }).then((res) => {
         return res;
+      }).catch((err) => {
+        console.log(err)
       })
       return newAccount;
     })

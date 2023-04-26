@@ -21,7 +21,7 @@ export default function SignIn() {
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         try {
-            const onSignin = await signIn('credentials', { redirect: false, username: data.username, password: data.password })
+            const onSignin = await signIn('credentials', { redirect: false, username: data.username, password: data.password, callbackUrl: '/' })
 
         } catch (error) {
             console.log(error)
