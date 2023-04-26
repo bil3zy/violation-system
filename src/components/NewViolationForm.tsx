@@ -3,10 +3,10 @@ import type { SubmitHandler } from 'react-hook-form';
 import { useSession } from "next-auth/react"
 import { Cairo } from "next/font/google";
 import { useRouter } from "next/router";
-import type { ViolationEntry, ViolationCar, ViolationPerson, ViolationTicket } from '@prisma/client'
+import type { ViolationsEntry, ViolationsCar, ViolationsPerson, ViolationsTicket } from '@prisma/client'
 import { api } from "~/utils/api";
 
-type Inputs = ViolationCar & ViolationEntry & ViolationPerson & ViolationTicket;
+type Inputs = ViolationsCar & ViolationsEntry & ViolationsPerson & ViolationsTicket;
 
 const cairo = Cairo({ weight: '700', subsets: ['arabic'] })
 const cairoLight = Cairo({ weight: '500', subsets: ['arabic'] })
